@@ -135,10 +135,10 @@ implicit def stringOps (s: String) = new {
 
     case Nil => r
 
-    case c :: i => {
+    case c :: cs => {
 
 
-      ders(i, simp(der(c, r)))
+      ders(cs, simp(der(c, r)))
 
 
     }
