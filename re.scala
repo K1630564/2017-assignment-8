@@ -65,7 +65,7 @@ implicit def stringOps (s: String) = new {
 
     case ZERO => ZERO
 
-    case ONE => ONE
+    case ONE => ZERO
 
     case CHAR(r) => {
       if (c == r) ONE
