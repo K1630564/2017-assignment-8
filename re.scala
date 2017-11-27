@@ -104,7 +104,7 @@ implicit def stringOps (s: String) = new {
 
         case SEQ(ONE, r) => simp(r)
 
-        case _ => SEQ(r1, r2)
+        case _ => SEQ(simp(r1), simp(r2))
 
       }
     }
