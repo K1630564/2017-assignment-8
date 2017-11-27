@@ -39,13 +39,30 @@ implicit def stringOps (s: String) = new {
   def ~ (r: String) = SEQ(s, r)
 }
 
-// (1a) Complete the function nullable according to
-// the definition given in the coursework; this 
-// function checks whether a regular expression
-// can match the empty string and Returns a boolean
-// accordingly.
 
-//def nullable (r: Rexp) : Boolean = ...
+
+
+  def nullable(r: Rexp): Boolean = {
+
+    r match{
+
+      case ZERO => false
+
+      case ONE => true
+
+      case CHAR(r) => true
+
+      case ALT(r1, r2) => nullable(r1) || nullable(r2)
+
+      case SEQ(r1, r2) => nullable(r1) && nullable(r2)
+
+      case STAR(r) => true
+
+
+
+    }
+
+  }
 
 
 // (1b) Complete the function der according to
