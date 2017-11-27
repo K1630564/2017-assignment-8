@@ -42,15 +42,13 @@ implicit def stringOps (s: String) = new {
 
 
 
-  def nullable(r: Rexp): Boolean = {
-
-    r match{
+  def nullable(r: Rexp): Boolean = r match{
 
       case ZERO => false
 
       case ONE => true
 
-      case CHAR(r) => true
+      case CHAR(r) => false
 
       case ALT(r1, r2) => nullable(r1) || nullable(r2)
 
@@ -62,16 +60,13 @@ implicit def stringOps (s: String) = new {
 
     }
 
-  }
 
+/*
 
-// (1b) Complete the function der according to
-// the definition given in the coursework; this
-// function calculates the derivative of a 
-// regular expression w.r.t. a character.
+def der (c: Char, r: Rexp) : Rexp = {
 
-//def der (c: Char, r: Rexp) : Rexp = ...
-
+}
+*/
 
 // (1c) Complete the simp function according to
 // the specification given in the coursework; this
