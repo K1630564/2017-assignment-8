@@ -128,15 +128,30 @@ implicit def stringOps (s: String) = new {
   }
 
 
-// (1d) Complete the two functions below; the first 
-// calculates the derivative w.r.t. a string; the second
-// is the regular expression matcher taking a regular
-// expression and a string and checks whether the
-// string matches the regular expression
 
-//def ders (s: List[Char], r: Rexp) : Rexp = ... 
 
-//def matcher(r: Rexp, s: String): Boolean = ...
+  def ders (s: List[Char], r: Rexp) : Rexp = s match {
+
+    case Nil => r
+
+    case c :: i => {
+
+
+      ders(i, simp(der(c, r)))
+
+
+    }
+
+
+
+  }
+
+  def matcher(r: Rexp, s: String): Boolean = {
+
+    nullable(ders(s.toList, r))
+
+
+  }
 
 
 // (1e) Complete the size function for regular
