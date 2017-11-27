@@ -155,11 +155,28 @@ implicit def stringOps (s: String) = new {
   }
 
 
-// (1e) Complete the size function for regular
-// expressions according to the specification 
-// given in the coursework.
 
-//def size(r: Rexp): Int = ...
+
+  def size(r: Rexp): Int = {
+
+    r match{
+
+      case ZERO => 1
+
+      case ONE => 1
+
+      case CHAR(r) => 1
+
+      case ALT(r1, r2) => 1 + size(r1) + size(r2)
+
+      case SEQ(r1, r2) => 1 + size(r1) + size(r2)
+
+      case STAR(r) => 1 + size(r)
+
+      case _ => size(r)
+    }
+
+  }
 
 
 // some testing data
