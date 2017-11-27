@@ -110,7 +110,16 @@ implicit def stringOps (s: String) = new {
 
     case ALT(ZERO, r) => simp(r)
 
-    case ALT(r1, r2) => if (r1 == r2) simp(r1) else simp(r2)
+
+    case ALT(r1, r2) => {
+
+      if (r1 == r2) simp(r1)
+      else if (r1 == ONE) ALT(r1, r2)
+      else if (r2 == ONE) ALT(r1, r2)
+      else simp(ALT(simp(r1), simp(r2)))
+
+    }
+
 
     case STAR(r) => STAR(r)
 
