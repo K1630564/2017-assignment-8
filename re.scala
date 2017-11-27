@@ -91,19 +91,28 @@ implicit def stringOps (s: String) = new {
 
   def simp(r: Rexp) : Rexp = r match {
 
+
+    case CHAR(r) => CHAR(r)
+
+    case ZERO => ZERO
+
+    case ONE => ONE
+
     case SEQ(r, ZERO) => ZERO
 
     case SEQ(ZERO, r) => ZERO
 
-    case SEQ(r , ONE) => r
+    case SEQ(r , ONE) => simp(r)
 
-    case SEQ(ONE, r) => r
+    case SEQ(ONE, r) => simp(r)
 
-    case ALT(r , ZERO) => r
+    case ALT(r , ZERO) => simp(r)
 
-    case ALT(ZERO, r) => r
+    case ALT(ZERO, r) => simp(r)
 
-    case ALT(r1, r2) => if (r1 == r2) r else ALT(r1, r2)
+    case ALT(r1, r2) => if (r1 == r2) simp(r1) else simp(r2)
+
+    case STAR(r) => STAR(r)
 
 
 
