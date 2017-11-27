@@ -92,43 +92,44 @@ implicit def stringOps (s: String) = new {
   def simp(r: Rexp) : Rexp = r match {
 
 
-    case CHAR(r) => CHAR(r)
+    case SEQ(r1, r2) => {
 
-    case ZERO => ZERO
+      SEQ(simp(r1), simp(r2)) match{
 
-    case ONE => ONE
+        case SEQ(r, ZERO) => ZERO
 
-    case SEQ(r, ZERO) => ZERO
+        case SEQ(ZERO, r) => ZERO
 
-    case SEQ(ZERO, r) => ZERO
+        case SEQ(r , ONE) => simp(r)
 
-    case SEQ(r , ONE) => simp(r)
+        case SEQ(ONE, r) => simp(r)
 
-    case SEQ(ONE, r) => simp(r)
+        case _ => SEQ(r1, r2)
 
-    case ALT(r , ZERO) => simp(r)
-
-    case ALT(ZERO, r) => simp(r)
+      }
+    }
 
 
     case ALT(r1, r2) => {
 
-      if (r1 == r2) simp(r1)
-      else if (r1 == ONE) ALT(r1, r2)
-      else if (r2 == ONE) ALT(r1, r2)
-      else simp(ALT(simp(r1), simp(r2)))
+      ALT(simp(r1), simp(r2)) match {
 
+        case ALT(r , ZERO) => simp(r)
+
+        case ALT(ZERO, r) => simp(r)
+
+        case ALT(r1, r2) => if(r1 == r2) simp(r1) else ALT(simp(r1), simp(r2))
+
+        case _ => ALT(simp(r1), simp(r2))
+
+      }
     }
 
-
-    case STAR(r) => STAR(r)
+    case _ => r
 
 
 
   }
-
-
-
 
   def ders (s: List[Char], r: Rexp) : Rexp = s match {
 
