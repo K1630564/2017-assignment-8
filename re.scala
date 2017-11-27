@@ -86,14 +86,28 @@ implicit def stringOps (s: String) = new {
 
   }
 
-// (1c) Complete the simp function according to
-// the specification given in the coursework; this
-// function simplifies a regular expression from
-// the inside out, like you would simplify arithmetic 
-// expressions; however it does not simplify inside 
-// STAR-regular expressions.
 
-//def simp(r: Rexp) : Rexp = ... 
+
+
+  def simp(r: Rexp) : Rexp = r match {
+
+    case SEQ(r, ZERO) => ZERO
+
+    case SEQ(ZERO, r) => ZERO
+
+    case SEQ(r , ONE) => r
+
+    case SEQ(ONE, r) => r
+
+    case ALT(r , ZERO) => r
+
+    case ALT(ZERO, r) => r
+
+    case ALT(r1, r2) => if (r1 == r2) r else ALT(r1, r2)
+
+
+
+  }
 
 
 // (1d) Complete the two functions below; the first 
