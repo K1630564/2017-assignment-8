@@ -13,7 +13,6 @@ case class SEQ(r1: Rexp, r2: Rexp) extends Rexp   // sequence
 case class STAR(r: Rexp) extends Rexp             // star
 
 
-// some convenience for typing in regular expressions
 
 import scala.language.implicitConversions    
 import scala.language.reflectiveCalls 
