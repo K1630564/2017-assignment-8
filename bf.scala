@@ -3,7 +3,9 @@
 
 object CW8b {
 
-type Mem = Map[Int, Int]
+  type Mem = Map[Int, Int]
+
+
 
   def sread(mem: Mem, mp: Int) : Int = {
 
@@ -20,13 +22,13 @@ type Mem = Map[Int, Int]
 
   def jumpRight(prog: String, pc: Int, level: Int) : Int = {
 
-    if((pc > prog.length-2) || (prog(pc) == ']' && level == 0) ) pc + 1
+    if((pc > prog.length - 2) || (prog(pc) == ']' && level == 0) ) pc + 1
 
-    else if (level != 0 && prog(pc) == ']') jumpRight(prog, pc+1, level-1)
+    else if (level != 0 && prog(pc) == ']') jumpRight(prog, pc + 1, level - 1)
 
-    else if (prog(pc) == '[') jumpRight(prog, pc+1, level+1)
+    else if (prog(pc) == '[') jumpRight(prog, pc + 1, level + 1)
 
-    else jumpRight(prog, pc+1, level)
+    else jumpRight(prog, pc + 1, level)
 
 
   }
@@ -35,132 +37,59 @@ type Mem = Map[Int, Int]
 
     if(level == 0 && prog(pc) == '[') pc + 1
 
-    else if(level != 0 && pc == 0) -1
+    else if(level != 0 && pc == 0) - 1
 
-    else if(level != 0 && prog(pc) == '[') jumpLeft(prog, pc-1, level-1)
+    else if(level != 0 && prog(pc) == '[') jumpLeft(prog, pc - 1, level - 1)
 
-    else if(prog(pc) == ']') jumpLeft(prog, pc-1, level+1)
+    else if(prog(pc) == ']') jumpLeft(prog, pc - 1, level + 1)
 
-    else jumpLeft(prog, pc-1, level)
+    else jumpLeft(prog, pc - 1, level)
 
 
   }
 
 
 
-// (2c) Complete the run function that interprets (runs) a brainf***
-// program: the arguments are a program, a program counter,
-// a memory counter and a brainf*** memory. It Returns the
-// memory at the stage when the execution of the brainf*** program
-// finishes. The interpretation finishes once the program counter
-// pc is pointing to something outside the program string.
-// If the pc points to a character inside the program, the pc, 
-// memory pointer and memory need to be updated according to 
-// rules of the brainf*** language. Then, recursively, the run 
-// function continues with the command at the new program
-// counter. 
-//
-// Implement the start function that calls run with the program
-// counter and memory counter set to 0.
-
-//def run(prog: String, pc: Int, mp: Int, mem: Mem) : Mem = ...
-
-//def start(prog: String, mem: Mem) = ...
+  def run(prog: String, pc: Int, mp: Int, mem: Mem) : Mem = {
 
 
+    if(pc > prog.length - 1) mem
 
+    else if(prog(pc) == '>') run(prog, pc + 1, mp + 1, mem)
 
+    else if(prog(pc) == '<') run(prog, pc + 1, mp - 1, mem)
 
+    else if(prog(pc) == '+') run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) + 1))
 
-// some sample bf programs collected from the Internet
-//==================================================
+    else if(prog(pc) == '-') run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) - 1))
 
+    else if(prog(pc) == '.') {
+      print(sread(mem, mp).toChar)
+      run(prog, pc + 1, mp, mem)
+    }
 
-/*
-// first some contrived (small) programs
+    else if(prog(pc) == ',') run(prog, pc + 1, mp, mem.updated(mp, Console.in.read().toByte))
 
-// clears the 0-cell
-start("[-]", Map(0 -> 100)) 
+    else if(prog(pc) == '[') {
+      if (sread(mem, mp) == 0) run(prog, jumpRight(prog, pc + 1, 0), mp, mem)
 
-// copies content of the 0-cell to 1-cell
-start("[->+<]", Map(0 -> 10))
+      else run(prog, pc + 1, mp, mem)
+    }
 
-// copies content of the 0-cell to 2-cell and 4-cell
-start("[>>+>>+<<<<-]", Map(0 -> 42))
+    else if(prog(pc) == ']') {
+      if(sread(mem, mp) != 0) run(prog, jumpLeft(prog, pc - 1, 0), mp, mem)
 
-start("+++[>+++++<-]", Map(0 -> 10))
+      else run(prog, pc + 1, mp, mem)
+    }
 
+    else run(prog, pc + 1, mp, mem)
 
-// prints out numbers 0 to 9
-start("""+++++[->++++++++++<]>--<+++[->>++++++++++<<]>>++<<----------[+>.>.<+<]""", Map())
+  }
 
+  def start(prog: String, mem: Mem) = {
 
-// some more "useful" programs
+    run(prog, 0, 0, mem)
 
-// hello world program 1
-start("""++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++
-       ..+++.>>.<-.<.+++.------.--------.>>+.>++.""", Map())
-
-// hello world program 2
-start("""++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>+
-      +.<<+++++++++++++++.>.+++.------.--------.>+.>.""", Map())
-
-
-// draws the Sierpinski triangle
-start("""++++++++[>+>++++<<-]>++>>+<[-[>>+<<-]+>>]>+[-<<<[
-      ->[+[-]+>++>>>-<<]<[<]>>++++++[<<+++++>>-]+<<++.[-]<<
-      ]>.>+[>>]>+]""", Map())
-
-//Fibonacci numbers below 100
-start("""+++++++++++
-      >+>>>>++++++++++++++++++++++++++++++++++++++++++++
-      >++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>
-      +<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-
-      <-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<
-      -]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]
-      >[<<+>>[-]]<<<<<<<]>>>>>[+++++++++++++++++++++++++
-      +++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++
-      ++++++++++++++++++++++++++++++++++++++++++++.[-]<<
-      <<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<
-      [-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]""", Map())
-
-
-//outputs the square numbers up to 10000
-start("""++++[>+++++<-]>[<+++++>-]+<+[
-    >[>+>+<<-]++>>[<<+>>-]>>>[-]++>[-]+
-    >>>+[[-]++++++>>>]<<<[[<++++++++<++>>-]+<.<[>----<-]<]
-    <<[>>>>>[>>>[-]+++++++++<[>-<-]+++++++++>[-[<->-]+[<<<]]<[>+<-]>]<<-]<<-]""", Map())
-
-
-//Collatz numbers (need to be typed in)
-start(""">,[[----------[
-      >>>[>>>>]+[[-]+<[->>>>++>>>>+[>>>>]++[->+<<<<<]]<<<]
-      ++++++[>------<-]>--[>>[->>>>]+>+[<<<<]>-],<]>]>>>++>+>>[
-      <<[>>>>[-]+++++++++<[>-<-]+++++++++>[-[<->-]+[<<<<]]<[>+<-]>]
-      >[>[>>>>]+[[-]<[+[->>>>]>+<]>[<+>[<<<<]]+<<<<]>>>[->>>>]+>+[<<<<]]
-      >[[>+>>[<<<<+>>>>-]>]<<<<[-]>[-<<<<]]>>>>>>>
-      ]>>+[[-]++++++>>>>]<<<<[[<++++++++>-]<.[-]<[-]<[-]<]<,]""", Map())
-
-
-// infinite Collatz (never stops)
-start(""">>+>+<[[->>[>>]>>>[>>]+[<<]<<<[<<]>[>[>>]>>+>[>>]<+<[<<]<<<[<
-      <]>-]>[>>]>>[<<<<[<<]>+>[>>]>>-]<<<<[<<]+>>]<<[+++++[>+++++++
-      +<-]>.<++++++[>--------<-]+<<]>>[>>]+[>>>>[<<+>+>-]<-[>+<-]+<
-      [<<->>-[<<+>>[-]]]>>>[<<<+<<+>>>>>-]<<<[>>>+<<<-]<<[[-]>+>>->
-      [<+<[<<+>>-]<[>+<-]<[>+<-]>>>>-]<[>+<-]+<[->[>>]<<[->[<+++>-[
-      <+++>-[<+++>-[<[-]++>>[-]+>+<<-[<+++>-[<+++>-[<[-]+>>>+<<-[<+
-      ++>-[<+++>-]]]]]]]]]<[>+<-]+<<]>>>+<[->[<+>-[<+>-[<+>-[<+>-[<
-      +>-[<+>-[<+>-[<+>-[<+>-[<[-]>>[-]+>+<<-[<+>-]]]]]]]]]]]<[>+<-
-      ]+>>]<<[<<]>]<[->>[->+>]<[-[<+>-[<->>+<-[<+>-[<->>+<-[<+>-[<-
-      >>+<-[<+>-[<->>+<-[<+>-[<->>+<-[<+>-[<->>+<-[<+>-[<->>+<-[<+>
-      -[<->>+<-[<+>-[<->>+<-[<+>-]]]]]]]]]]]]]]]]]]]>[<+>-]<+<[<+++
-      +++++++>-]<]>>[<+>->>]<<[>+>+<<-]>[<+>-]+>[<->[-]]<[-<<-]<<[<
-      <]]++++++[>+++++++<-]>++.------------.[-]>[>>]<<[+++++[>+++++
-      +++<-]>.<++++++[>--------<-]+<<]+<]>[<+>-]<]>>>[>>]<<[>[-]<-<
-      <]++++++++++.[-]<<<[<<]>>>+<[->[<+>-[<+>-[<+>-[<+>-[<+>-[<+>-
-      [<+>-[<+>-[<+>-[<[-]>>[-]+>+<<-]]]]]]]]]]<[>+<-]+>>]<<[<<]>>]""", Map())
-
-
-*/ 
+  }
 
 }
