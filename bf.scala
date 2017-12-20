@@ -5,31 +5,46 @@ object CW8b {
 
 type Mem = Map[Int, Int]
 
-// (2a) Complete the functions for safely reading  
-// and writing brainf*** memory. Safely read should
-// Return the value stored in the Map for a given memory
-// pointer, if it exists; otherwise it Returns 0. The
-// writing function generates a new Map with the
-// same data, except at the given memory pointer the
-// value v is stored.
+  def sread(mem: Mem, mp: Int) : Int = {
+
+    mem.getOrElse(mp, 0)
+
+  }
+
+  def write(mem: Mem, mp: Int, v: Int) : Mem = {
+
+    mem.updated(mp, v)
+
+  }
 
 
-//def sread(mem: Mem, mp: Int) : Int = ...
+  def jumpRight(prog: String, pc: Int, level: Int) : Int = {
 
-//def write(mem: Mem, mp: Int, v: Int) : Mem = ...
+    if((pc > prog.length-2) || (prog(pc) == ']' && level == 0) ) pc + 1
+
+    else if (level != 0 && prog(pc) == ']') jumpRight(prog, pc+1, level-1)
+
+    else if (prog(pc) == '[') jumpRight(prog, pc+1, level+1)
+
+    else jumpRight(prog, pc+1, level)
 
 
-// (2b) Implement the two jumping instructions in the 
-// brainf*** language. In jumpRight, given a program and 
-// a program counter move the counter to the right 
-// until the command after the *matching* ]-command. Similarly, 
-// jumpLeft implements the move to the left to just after
-// the *matching* [-command. The levels are used to find the
-// *matching* bracket.
+  }
 
-//def jumpRight(prog: String, pc: Int, level: Int) : Int = ...
+  def jumpLeft(prog: String, pc: Int, level: Int) : Int = {
 
-//def jumpLeft(prog: String, pc: Int, level: Int) : Int = ...
+    if(level == 0 && prog(pc) == '[') pc + 1
+
+    else if(level != 0 && pc == 0) -1
+
+    else if(level != 0 && prog(pc) == '[') jumpLeft(prog, pc-1, level-1)
+
+    else if(prog(pc) == ']') jumpLeft(prog, pc-1, level+1)
+
+    else jumpLeft(prog, pc-1, level)
+
+
+  }
 
 
 
