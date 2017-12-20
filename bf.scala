@@ -52,37 +52,38 @@ object CW8b {
 
   def run(prog: String, pc: Int, mp: Int, mem: Mem) : Mem = {
 
-
     if(pc > prog.length - 1) mem
 
-    else if(prog(pc) == '>') run(prog, pc + 1, mp + 1, mem)
+    else {
 
-    else if(prog(pc) == '<') run(prog, pc + 1, mp - 1, mem)
+      prog(pc) match {
 
-    else if(prog(pc) == '+') run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) + 1))
+        case '>' => run(prog, pc + 1, mp + 1, mem)
 
-    else if(prog(pc) == '-') run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) - 1))
+        case '<' => run(prog, pc + 1, mp - 1, mem)
 
-    else if(prog(pc) == '.') {
-      print(sread(mem, mp).toChar)
-      run(prog, pc + 1, mp, mem)
+        case '+' => run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) + 1))
+
+        case '-' => run(prog, pc + 1, mp, write(mem, mp, sread(mem, mp) - 1))
+
+        case '.' => print(sread(mem, mp).toChar)
+          run(prog, pc + 1, mp, mem)
+
+        case ',' => run(prog, pc + 1, mp, mem.updated(mp, Console.in.read().toByte))
+
+        case '[' => {
+          if(sread(mem, mp) == 0) run(prog, jumpRight(prog, pc + 1, 0), mp, mem)
+          else run(prog, pc + 1, mp, mem) 
+        }
+
+        case ']' => {
+          if(sread(mem, mp) != 0) run(prog, jumpLeft(prog, pc - 1, 0), mp, mem)
+          else run(prog, pc + 1, mp, mem)
+        }
+
+        case _ => run(prog, pc + 1, mp, mem)
+      }
     }
-
-    else if(prog(pc) == ',') run(prog, pc + 1, mp, mem.updated(mp, Console.in.read().toByte))
-
-    else if(prog(pc) == '[') {
-      if (sread(mem, mp) == 0) run(prog, jumpRight(prog, pc + 1, 0), mp, mem)
-
-      else run(prog, pc + 1, mp, mem)
-    }
-
-    else if(prog(pc) == ']') {
-      if(sread(mem, mp) != 0) run(prog, jumpLeft(prog, pc - 1, 0), mp, mem)
-
-      else run(prog, pc + 1, mp, mem)
-    }
-
-    else run(prog, pc + 1, mp, mem)
 
   }
 
